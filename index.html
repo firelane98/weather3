@@ -1,9 +1,12 @@
 <html><head><base href=".">
   <title>Weather App</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'DM Sans', 'Segoe UI', sans-serif;
       margin: 0;
       padding: 20px;
       background: linear-gradient(135deg, #1a1a2e, #16213e);
@@ -115,10 +118,37 @@
       transform: scale(0.95);
     }
     
-    #saveLocationBtn, #loadLocationBtn {
-      flex: 1;
-      min-width: 120px;
+    /* Icon buttons (GPS + save) */
+    .icon-btn {
+      flex-shrink: 0; width: 48px; height: 48px; padding: 0;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 10px; background: rgba(67,97,238,0.75);
+      font-size: 16px;
     }
+    .icon-btn:hover { background: rgba(67,97,238,0.95); transform: scale(1.05); }
+    /* Unit toggle */
+    .unit-row { display: flex; justify-content: flex-end; margin: -6px 0 10px; }
+    .unit-toggle-btn {
+      background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+      color: #e9ecef; padding: 5px 16px; border-radius: 20px;
+      font-size: 13px; font-weight: 600; cursor: pointer; letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+    .unit-toggle-btn:hover { background: rgba(255,255,255,0.15); transform: scale(1.04); }
+    /* Detail icon + visual weight */
+    .detail-icon { font-size: 1.3em; margin-bottom: 2px; }
+    .detail-item {
+      background: rgba(67,97,238,0.06);
+      border: 1px solid rgba(67,97,238,0.18);
+    }
+    /* Drawer save button */
+    .drawer-save-btn {
+      background: rgba(67,97,238,0.18); border: 1px solid rgba(67,97,238,0.4);
+      color: #e9ecef; border-radius: 8px; padding: 9px 16px; cursor: pointer;
+      font-size: 14px; transition: all 0.2s; margin-bottom: 14px; width: 100%;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .drawer-save-btn:hover { background: rgba(67,97,238,0.35); transform: none; }
 
     .weather-info {
       text-align: center;
@@ -391,7 +421,9 @@
       overflow-x: auto;
       -webkit-overflow-scrolling: touch;
       padding: 10px 0;
+      scrollbar-width: none; /* Firefox */
     }
+    .hourly-forecast::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
     .hourly-scroll {
       display: flex;
@@ -449,23 +481,21 @@
         flex-direction: column;
       }
       
-      input, button {
+      .search-box input, .search-box > button:not(.icon-btn) {
+        flex: 1;
         width: 100%;
       }
-      
+
       .detail-item {
         padding: 12px;
       }
-      
+
       .forecast-item {
         min-height: 160px;
       }
-      
+
       .forecast {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      }
-      #saveLocationBtn, #loadLocationBtn {
-        width: 100%;
       }
       .hourly-item {
         min-width: 80px;
@@ -609,6 +639,115 @@
       color: #ff3333;
       font-weight: bold;
     }
+
+    /* ========== BROWSER BAR ========== */
+    .browser-bar {
+      position: fixed; top: 0; left: 0; width: 100%;
+      background: #fef9c3; border-bottom: 1px solid #ca8a04;
+      z-index: 99995; font-family: -apple-system, 'Segoe UI', sans-serif;
+      transform: translateY(-100%); transition: transform 0.45s ease;
+    }
+    .browser-bar.visible { transform: translateY(0); }
+    .browser-bar.gone { display: none; }
+    .browser-bar-inner {
+      max-width: 960px; margin: 0 auto; padding: 9px 16px;
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .browser-bar-icon { font-size: 15px; flex-shrink: 0; }
+    .browser-bar-text { flex: 1; font-size: 13px; color: #78350f; min-width: 160px; }
+    .browser-bar-update {
+      background: #2563eb; color: white; border: none;
+      padding: 5px 14px; border-radius: 4px; font-size: 12px; font-weight: 600;
+      cursor: pointer; flex-shrink: 0; transition: background 0.2s;
+    }
+    .browser-bar-update:hover { background: #1d4ed8; transform: none; }
+    .browser-bar-dismiss {
+      background: transparent; border: none; color: #78350f;
+      font-size: 17px; cursor: pointer; padding: 2px 6px; flex-shrink: 0;
+    }
+    .browser-bar-dismiss:hover { background: rgba(0,0,0,0.08); transform: none; }
+
+    /* ========== COOKIE CONSENT ========== */
+    .cookie-overlay {
+      position: fixed; bottom: 0; left: 0; width: 100%;
+      background: rgba(12,12,22,0.97); border-top: 2px solid #4361ee;
+      z-index: 99994; max-height: 60vh; overflow-y: auto;
+      font-family: Arial, sans-serif; color: #ddd;
+      transform: translateY(100%); transition: transform 0.5s ease;
+    }
+    .cookie-overlay.visible { transform: translateY(0); }
+    .cookie-overlay.gone { display: none; }
+    .cookie-banner { max-width: 900px; margin: 0 auto; padding: 18px 20px; }
+    .cookie-header h3 { color: #fff; margin: 0 0 5px; font-size: 17px; }
+    .cookie-header p { font-size: 12px; color: #999; margin: 0 0 14px; }
+    .cookie-toggles {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+      gap: 5px; max-height: 190px; overflow-y: auto; margin-bottom: 14px;
+      padding: 8px; background: rgba(255,255,255,0.03);
+      border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
+      scrollbar-width: thin;
+    }
+    .cookie-toggle-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 4px 8px; background: rgba(255,255,255,0.04);
+      border-radius: 4px; font-size: 10.5px; color: #bbb; gap: 8px;
+    }
+    .cookie-toggle-item label { flex: 1; cursor: pointer; }
+    .toggle-switch { position: relative; width: 30px; height: 17px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute; inset: 0; background: #4361ee;
+      border-radius: 17px; cursor: pointer; transition: 0.2s;
+    }
+    .toggle-slider::before {
+      content: ''; position: absolute; width: 11px; height: 11px;
+      left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: 0.2s;
+    }
+    .toggle-switch input:not(:checked) + .toggle-slider { background: #444; }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(13px); }
+    .cookie-footer { display: flex; gap: 10px; flex-wrap: wrap; }
+    .cookie-accept-all {
+      background: #4361ee; color: white; border: none; padding: 9px 22px;
+      border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .cookie-accept-all:hover { background: #3250e0; transform: none; }
+    .cookie-manage {
+      background: transparent; color: #aaa; border: 1px solid #555;
+      padding: 9px 22px; border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.2s;
+    }
+    .cookie-manage:hover { color: #fff; border-color: #888; transform: none; }
+    /* Cookie modal */
+    .cookie-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.82);
+      z-index: 99998; display: flex; justify-content: center; align-items: center;
+    }
+    .cookie-modal-overlay.hidden { display: none; }
+    .cookie-modal {
+      background: #1a1a2e; border: 1px solid #4361ee; border-radius: 12px;
+      width: 90%; max-width: 580px; max-height: 80vh;
+      display: flex; flex-direction: column; color: #ddd; font-family: Arial, sans-serif;
+    }
+    .cookie-modal-header {
+      padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .cookie-modal-header h3 { margin: 0; color: #fff; font-size: 15px; }
+    .cookie-modal-close {
+      background: transparent; border: none; color: #999; font-size: 18px; cursor: pointer;
+    }
+    .cookie-modal-close:hover { color: #fff; transform: none; }
+    .cookie-modal-body { flex: 1; overflow-y: auto; padding: 14px 18px; }
+    .cookie-modal-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .modal-category {
+      margin-bottom: 12px; padding: 10px 12px;
+      background: rgba(255,255,255,0.04); border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.07);
+    }
+    .modal-cat-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;
+    }
+    .modal-cat-header strong { font-size: 12px; color: #eee; }
+    .modal-category p { font-size: 10px; color: #777; margin: 0; line-height: 1.5; }
 
     /* ========== AD STYLES ========== */
 
@@ -821,10 +960,17 @@
 <body>
   <div class="container">
     <div class="search-box">
+      <button class="icon-btn" onclick="getWeatherByGPS()" title="Use my location">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      </button>
       <input type="text" placeholder="Enter city name" id="cityInput">
       <button onclick="getWeather()">Search</button>
-      <button onclick="saveLocation()" id="saveLocationBtn">Save Location</button>
-      <button onclick="getSavedLocation()" id="loadLocationBtn">Load Saved</button>
+      <button class="icon-btn" onclick="saveLocation()" title="Save location">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z"/></svg>
+      </button>
+    </div>
+    <div class="unit-row">
+      <button class="unit-toggle-btn" id="unitToggleBtn" onclick="toggleUnit()">°F</button>
     </div>
     
     <div class="weather-info">
@@ -835,30 +981,49 @@
         <div class="weather-icon" id="weatherIcon">
           <!-- Weather icon will be inserted here -->
         </div>
-        <div class="temp"><span id="temperature"></span>&#xb0;C</div>
-        <div class="feels-like">Feels like: <span id="feelsLike"></span>&#xb0;C</div>
+        <div class="temp"><span id="temperature"></span><span id="tempUnit">°C</span></div>
+        <div class="feels-like">Feels like: <span id="feelsLikeVal"></span><span id="feelsLikeUnit">°C</span></div>
         <div class="min-max">
-          <div class="min-temp">&#x1f53d; <span id="tempMin"></span>&#xb0;C</div>
-          <div class="max-temp">&#x1f53c; <span id="tempMax"></span>&#xb0;C</div>
+          <div class="min-temp">🔽 <span id="tempMin"></span><span id="tempMinUnit">°C</span></div>
+          <div class="max-temp">🔼 <span id="tempMax"></span><span id="tempMaxUnit">°C</span></div>
         </div>
         <div class="description" id="weatherDescription"></div>
         <div class="weather-insight" id="weatherInsight"></div>
         <div class="details">
           <div class="detail-item">
+            <div class="detail-icon">💧</div>
             <div class="detail-label">Humidity</div>
             <div class="detail-value" id="humidity"></div>
           </div>
           <div class="detail-item">
-            <div class="detail-label">Wind Speed</div>
+            <div class="detail-icon">💨</div>
+            <div class="detail-label">Wind</div>
             <div class="detail-value" id="windSpeed"></div>
           </div>
           <div class="detail-item">
+            <div class="detail-icon">🌡️</div>
             <div class="detail-label">Pressure</div>
             <div class="detail-value" id="pressure"></div>
           </div>
           <div class="detail-item">
+            <div class="detail-icon">👁️</div>
             <div class="detail-label">Visibility</div>
             <div class="detail-value" id="visibility"></div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">🌅</div>
+            <div class="detail-label">Sunrise</div>
+            <div class="detail-value" id="sunrise">--</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">🌇</div>
+            <div class="detail-label">Sunset</div>
+            <div class="detail-value" id="sunset">--</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-icon">☀️</div>
+            <div class="detail-label">UV Index</div>
+            <div class="detail-value" id="uvIndex">--</div>
           </div>
         </div>
         <div class="rain-chart">
@@ -888,8 +1053,48 @@
       <h3>Saved Locations</h3>
       <button class="close-menu" onclick="toggleMenu()">&#xd7;</button>
     </div>
+    <button class="drawer-save-btn" onclick="saveLocation()">📍 Save Current Location</button>
     <div id="savedLocationsList">
       <!-- Saved locations will be inserted here -->
+    </div>
+  </div>
+
+  <!-- Browser Outdated Bar -->
+  <div class="browser-bar" id="browserBar">
+    <div class="browser-bar-inner">
+      <span class="browser-bar-icon">ℹ️</span>
+      <span class="browser-bar-text">Your browser may not support <strong>WeatherNow™</strong>. Update to <strong>WeatherChrome 147</strong> for the best experience.</span>
+      <button class="browser-bar-update" onclick="alert('Searching for WeatherChrome 147...\n\nDownload failed. File not found on the internet.\n\nPlease try turning your computer off and on again.')">Update Now</button>
+      <button class="browser-bar-dismiss" onclick="document.getElementById('browserBar').classList.add('gone')" title="Dismiss">✕</button>
+    </div>
+  </div>
+
+  <!-- Cookie Consent Banner -->
+  <div class="cookie-overlay" id="cookieOverlay">
+    <div class="cookie-banner">
+      <div class="cookie-header">
+        <h3>🍪 We Value Your Privacy</h3>
+        <p>WeatherNow™ and our 847 trusted partners use cookies, sensors, and other tracking technologies to process your personal data including location, device activity, purchasing intent, emotional state, and more. Please indicate your preferences below.</p>
+      </div>
+      <div class="cookie-toggles" id="cookieToggles"><!-- populated by JS --></div>
+      <div class="cookie-footer">
+        <button class="cookie-accept-all" onclick="closeCookies()">Accept All</button>
+        <button class="cookie-manage" onclick="openCookieModal()">Manage Preferences</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cookie Preferences Modal -->
+  <div class="cookie-modal-overlay hidden" id="cookieModal">
+    <div class="cookie-modal">
+      <div class="cookie-modal-header">
+        <h3>🔧 Cookie Preferences (Advanced)</h3>
+        <button class="cookie-modal-close" onclick="closeCookieModal()">✕</button>
+      </div>
+      <div class="cookie-modal-body" id="cookieModalBody"><!-- populated by JS --></div>
+      <div class="cookie-modal-footer">
+        <button class="cookie-accept-all" onclick="closeCookieModal(); closeCookies()">Save &amp; Accept All</button>
+      </div>
     </div>
   </div>
 
@@ -965,132 +1170,237 @@
     </div>
   </div>
 
-<script>const API_KEY = 'b39a3807608bff9842216bf20fe3ba97';
+<script>
+const API_KEY = 'b39a3807608bff9842216bf20fe3ba97';
+
+// ── Global state ────────────────────────────────────────────────
+let _isCelsius = true;
+let _rawCurrentData = null;
+let _rawForecastData = null;
+let _currentCity = '';
+
+function convertTemp(c) { return _isCelsius ? Math.round(c) : Math.round(c * 9 / 5 + 32); }
+function tempUnit() { return _isCelsius ? '°C' : '°F'; }
+
+function toggleUnit() {
+  _isCelsius = !_isCelsius;
+  document.getElementById('unitToggleBtn').textContent = _isCelsius ? '°F' : '°C';
+  if (_rawCurrentData && _rawForecastData) renderWeatherUI(_rawCurrentData, _rawForecastData);
+}
+
+// ── Helpers ─────────────────────────────────────────────────────
+function getWindDirection(deg) {
+  const dirs = ['N','NNE','NE','ENE','E','ESE','SE','SSE','S','SSW','SW','WSW','W','WNW','NW','NNW'];
+  return dirs[Math.round(deg / 22.5) % 16];
+}
+
+function estimateUVIndex(iconCode, temp) {
+  const h = new Date().getHours();
+  if (h < 6 || h > 20) return 0;
+  const solar = Math.max(0, Math.sin((h - 6) * Math.PI / 14));
+  let uv = 9 * solar;
+  if (iconCode.startsWith('09') || iconCode.startsWith('10') || iconCode.startsWith('11')) uv *= 0.15;
+  else if (iconCode.startsWith('02') || iconCode.startsWith('03') || iconCode.startsWith('04')) uv *= 0.5;
+  else if (iconCode.startsWith('13') || iconCode.startsWith('50')) uv *= 0.25;
+  if (temp > 30) uv *= 1.1;
+  return Math.round(Math.min(uv, 11));
+}
+
+function getUVLabel(uv) {
+  if (uv <= 2) return { label: 'Low', color: '#4CAF50' };
+  if (uv <= 5) return { label: 'Moderate', color: '#CDDC39' };
+  if (uv <= 7) return { label: 'High', color: '#FF9800' };
+  if (uv <= 10) return { label: 'Very High', color: '#F44336' };
+  return { label: 'Extreme', color: '#9C27B0' };
+}
+
+function formatSunTime(utcTimestamp, tzOffsetSec) {
+  const d = new Date((utcTimestamp + tzOffsetSec) * 1000);
+  const h = d.getUTCHours(), m = d.getUTCMinutes().toString().padStart(2, '0');
+  return `${h % 12 || 12}:${m} ${h >= 12 ? 'PM' : 'AM'}`;
+}
+
+function updateMarqueeCity(city) {
+  const el = document.querySelector('.bottom-banner-scroll');
+  if (!el) return;
+  const C = city.toUpperCase();
+  el.innerHTML = `
+    🔥&nbsp; YOU HAVE (1) UNREAD MESSAGE &nbsp;•&nbsp;
+    🏆 FLASH SALE: 99% OFF EVERYTHING — ENDS IN 00:59 &nbsp;•&nbsp;
+    💊 DOCTORS HATE THIS ONE WEIRD TRICK! &nbsp;•&nbsp;
+    📱 WIN A FREE SMARTPHONE — CLICK HERE &nbsp;•&nbsp;
+    💰 MAKE $5,000/WEEK FROM HOME — NO EXPERIENCE NEEDED &nbsp;•&nbsp;
+    👀 LOCAL SINGLES IN ${C} WANT TO MEET YOU &nbsp;•&nbsp;
+    🎁 YOUR REWARD IS WAITING — CLAIM NOW &nbsp;•&nbsp;
+    ⚡ ${C} RESIDENTS: UNCLAIMED PRIZE IN YOUR AREA &nbsp;•&nbsp;
+    🌦️ FREE SHIPPING ON ALL ORDERS OVER $0 &nbsp;•&nbsp;
+  `;
+}
+
 function setWeatherBackground(weatherCode) {
   const body = document.body;
   body.className = '';
-  if (weatherCode.startsWith('01d')) {
-    body.classList.add('clear-day');
-  } else if (weatherCode.startsWith('01n')) {
-    body.classList.add('clear-night');
-  } else if (weatherCode.startsWith('02') || weatherCode.startsWith('03') || weatherCode.startsWith('04')) {
-    body.classList.add('clouds');
-  } else if (weatherCode.startsWith('09') || weatherCode.startsWith('10')) {
-    body.classList.add('rain');
-  } else if (weatherCode.startsWith('11')) {
-    body.classList.add('thunderstorm');
-  } else if (weatherCode.startsWith('13')) {
-    body.classList.add('snow');
-  } else if (weatherCode.startsWith('50')) {
-    body.classList.add('mist');
-  }
+  if (weatherCode.startsWith('01d')) body.classList.add('clear-day');
+  else if (weatherCode.startsWith('01n')) body.classList.add('clear-night');
+  else if (weatherCode.startsWith('02') || weatherCode.startsWith('03') || weatherCode.startsWith('04')) body.classList.add('clouds');
+  else if (weatherCode.startsWith('09') || weatherCode.startsWith('10')) body.classList.add('rain');
+  else if (weatherCode.startsWith('11')) body.classList.add('thunderstorm');
+  else if (weatherCode.startsWith('13')) body.classList.add('snow');
+  else if (weatherCode.startsWith('50')) body.classList.add('mist');
 }
+
+// ── Fetch ────────────────────────────────────────────────────────
 async function getWeather() {
+  const city = document.getElementById('cityInput').value.trim();
+  if (!city) return;
   const loadingEl = document.querySelector('.loading');
   const errorEl = document.querySelector('.error');
   const weatherDataEl = document.getElementById('weatherData');
-  const cityInput = document.getElementById('cityInput');
-  const city = cityInput.value;
-  if (!city) return;
   loadingEl.style.display = 'block';
   errorEl.style.display = 'none';
   weatherDataEl.style.display = 'none';
   try {
-    const [weatherResponse, forecastData] = await Promise.all([fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric`), getForecast(city)]);
+    const [weatherResponse, forecastData] = await Promise.all([
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`),
+      getForecast(city)
+    ]);
     const data = await weatherResponse.json();
-    if (data.cod === '404') {
-      throw new Error('City not found');
-    }
-    const currentRain = data.rain ? data.rain['1h'] || 0 : 0;
-    const currentSnow = data.snow ? data.snow['1h'] || 0 : 0;
-    document.getElementById('cityName').textContent = `${data.name}, ${data.sys.country}`;
-    document.getElementById('temperature').textContent = Math.round(data.main.temp);
-    document.getElementById('feelsLike').textContent = Math.round(data.main.feels_like);
-    document.getElementById('tempMin').textContent = Math.round(data.main.temp_min);
-    document.getElementById('tempMax').textContent = Math.round(data.main.temp_max);
-    document.getElementById('weatherDescription').textContent = data.weather[0].description;
-    document.getElementById('humidity').textContent = `${data.main.humidity}%`;
-    document.getElementById('windSpeed').textContent = `${data.wind.speed} m/s`;
-    document.getElementById('pressure').textContent = `${data.main.pressure} hPa`;
-    document.getElementById('visibility').textContent = `${(data.visibility / 1000).toFixed(1)} km`;
-    const iconCode = data.weather[0].icon;
-    const weatherIcon = document.getElementById('weatherIcon');
-    weatherIcon.innerHTML = getWeatherIcon(iconCode);
-    setWeatherBackground(iconCode);
-    const insight = getWeatherInsight(Math.round(data.main.temp), data.main.humidity, data.wind.speed, data.weather[0].description, Math.round(data.main.feels_like));
-    const insightEl = document.getElementById('weatherInsight');
-    insightEl.innerHTML = insight;
-    insightEl.style.display = 'block';
-    const forecastContainer = document.getElementById('forecast');
-    forecastContainer.innerHTML = '';
-    const dailyForecasts = forecastData.list.reduce((acc, forecast) => {
-      const date = new Date(forecast.dt * 1000).toDateString();
-      if (!acc[date]) {
-        acc[date] = forecast;
-      }
-      return acc;
-    }, {});
-    Object.values(dailyForecasts).slice(1, 6).forEach(forecast => {
-      const forecastItem = document.createElement('div');
-      forecastItem.className = 'forecast-item';
-      forecastItem.innerHTML = `
-        <div class="forecast-day">${formatDate(forecast.dt)}</div>
-        <div class="forecast-icon">${getWeatherIcon(forecast.weather[0].icon)}</div>
-        <div class="forecast-temp">${Math.round(forecast.main.temp)}°C</div>
-        <div class="forecast-desc">${forecast.weather[0].description}</div>
-        <div class="forecast-details">
-          <div class="forecast-details-grid">
-            <div class="forecast-detail-item">
-              <span>Feels Like</span>
-              <span>${Math.round(forecast.main.feels_like)}°C</span>
-            </div>
-            <div class="forecast-detail-item">
-              <span>Humidity</span>
-              <span>${forecast.main.humidity}%</span>
-            </div>
-            <div class="forecast-detail-item">
-              <span>Wind</span>
-              <span>${forecast.wind.speed} m/s</span>
-            </div>
-            <div class="forecast-detail-item">
-              <span>Pressure</span>
-              <span>${forecast.main.pressure} hPa</span>
-            </div>
-          </div>
-        </div>
-      `;
-      forecastItem.addEventListener('click', () => toggleForecastDetails(forecast, forecastItem));
-      forecastContainer.appendChild(forecastItem);
-    });
-    const hourlyContainer = document.getElementById('hourlyForecast');
-    hourlyContainer.innerHTML = '';
-    const hourlyForecasts = forecastData.list.slice(0, 8);
-    console.log('Forecast rain data:', hourlyForecasts.map(f => ({
-      time: new Date(f.dt * 1000).toLocaleTimeString(),
-      rain: f.rain
-    })));
-    hourlyForecasts.forEach(forecast => {
-      const hourlyItem = document.createElement('div');
-      hourlyItem.className = 'hourly-item';
-      const time = new Date(forecast.dt * 1000).toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        hour12: true
-      });
-      hourlyItem.innerHTML = `
-        <div class="hourly-time">${time}</div>
-        <div class="hourly-icon">${getWeatherIcon(forecast.weather[0].icon)}</div>
-        <div class="hourly-temp">${Math.round(forecast.main.temp)}°C</div>
-        <div class="hourly-desc">${forecast.weather[0].description}</div>
-      `;
-      hourlyContainer.appendChild(hourlyItem);
-    });
-    updateRainChart(currentRain + currentSnow, forecastData.list);
+    if (data.cod === '404') throw new Error('City not found');
+    _rawCurrentData = data;
+    _rawForecastData = forecastData;
+    _currentCity = data.name;
+    updateMarqueeCity(data.name);
+    renderWeatherUI(data, forecastData);
     loadingEl.style.display = 'none';
     weatherDataEl.style.display = 'block';
   } catch (error) {
     loadingEl.style.display = 'none';
     errorEl.style.display = 'block';
   }
+}
+
+async function getWeatherByGPS() {
+  if (!navigator.geolocation) { showNotification('Geolocation not supported'); return; }
+  const loadingEl = document.querySelector('.loading');
+  const errorEl = document.querySelector('.error');
+  const weatherDataEl = document.getElementById('weatherData');
+  loadingEl.style.display = 'block';
+  errorEl.style.display = 'none';
+  weatherDataEl.style.display = 'none';
+  navigator.geolocation.getCurrentPosition(async pos => {
+    try {
+      const { latitude: lat, longitude: lon } = pos.coords;
+      const [wRes, fRes] = await Promise.all([
+        fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`),
+        fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&cnt=24`)
+      ]);
+      const data = await wRes.json();
+      const forecastData = await fRes.json();
+      document.getElementById('cityInput').value = data.name;
+      _rawCurrentData = data;
+      _rawForecastData = forecastData;
+      _currentCity = data.name;
+      updateMarqueeCity(data.name);
+      renderWeatherUI(data, forecastData);
+      loadingEl.style.display = 'none';
+      weatherDataEl.style.display = 'block';
+    } catch (e) {
+      loadingEl.style.display = 'none';
+      errorEl.style.display = 'block';
+    }
+  }, () => {
+    loadingEl.style.display = 'none';
+    showNotification('Location access denied');
+  });
+}
+
+// ── Render ───────────────────────────────────────────────────────
+function renderWeatherUI(data, forecastData) {
+  const unit = tempUnit();
+  const iconCode = data.weather[0].icon;
+  const currentRain = data.rain ? (data.rain['1h'] || 0) : 0;
+  const currentSnow = data.snow ? (data.snow['1h'] || 0) : 0;
+
+  document.getElementById('cityName').textContent = `${data.name}, ${data.sys.country}`;
+  document.getElementById('temperature').textContent = convertTemp(data.main.temp);
+  document.getElementById('tempUnit').textContent = unit;
+  document.getElementById('feelsLikeVal').textContent = convertTemp(data.main.feels_like);
+  document.getElementById('feelsLikeUnit').textContent = unit;
+  document.getElementById('tempMin').textContent = convertTemp(data.main.temp_min);
+  document.getElementById('tempMinUnit').textContent = unit;
+  document.getElementById('tempMax').textContent = convertTemp(data.main.temp_max);
+  document.getElementById('tempMaxUnit').textContent = unit;
+  document.getElementById('weatherDescription').textContent = data.weather[0].description;
+  document.getElementById('humidity').textContent = `${data.main.humidity}%`;
+
+  const windDir = data.wind.deg !== undefined ? ` ${getWindDirection(data.wind.deg)}` : '';
+  document.getElementById('windSpeed').textContent = `${data.wind.speed} m/s${windDir}`;
+  document.getElementById('pressure').textContent = `${data.main.pressure} hPa`;
+  document.getElementById('visibility').textContent = `${(data.visibility / 1000).toFixed(1)} km`;
+  document.getElementById('sunrise').textContent = formatSunTime(data.sys.sunrise, data.timezone);
+  document.getElementById('sunset').textContent = formatSunTime(data.sys.sunset, data.timezone);
+
+  const uv = estimateUVIndex(iconCode, data.main.temp);
+  const uvInfo = getUVLabel(uv);
+  document.getElementById('uvIndex').innerHTML =
+    `<span style="color:${uvInfo.color};font-weight:700;">${uv}</span> <span style="font-size:0.8em;color:${uvInfo.color}">${uvInfo.label}</span>`;
+
+  document.getElementById('weatherIcon').innerHTML = getWeatherIcon(iconCode);
+  setWeatherBackground(iconCode);
+
+  const insightEl = document.getElementById('weatherInsight');
+  insightEl.innerHTML = getWeatherInsight(
+    Math.round(data.main.temp), data.main.humidity, data.wind.speed,
+    data.weather[0].description, Math.round(data.main.feels_like)
+  );
+  insightEl.style.display = 'block';
+
+  // Forecast
+  const forecastContainer = document.getElementById('forecast');
+  forecastContainer.innerHTML = '';
+  const dailyForecasts = forecastData.list.reduce((acc, f) => {
+    const date = new Date(f.dt * 1000).toDateString();
+    if (!acc[date]) acc[date] = f;
+    return acc;
+  }, {});
+  Object.values(dailyForecasts).slice(1, 6).forEach(forecast => {
+    const item = document.createElement('div');
+    item.className = 'forecast-item';
+    item.innerHTML = `
+      <div class="forecast-day">${formatDate(forecast.dt)}</div>
+      <div class="forecast-icon">${getWeatherIcon(forecast.weather[0].icon)}</div>
+      <div class="forecast-temp">${convertTemp(forecast.main.temp)}${unit}</div>
+      <div class="forecast-desc">${forecast.weather[0].description}</div>
+      <div class="forecast-details">
+        <div class="forecast-details-grid">
+          <div class="forecast-detail-item"><span>Feels Like</span><span>${convertTemp(forecast.main.feels_like)}${unit}</span></div>
+          <div class="forecast-detail-item"><span>Humidity</span><span>${forecast.main.humidity}%</span></div>
+          <div class="forecast-detail-item"><span>Wind</span><span>${forecast.wind.speed} m/s</span></div>
+          <div class="forecast-detail-item"><span>Pressure</span><span>${forecast.main.pressure} hPa</span></div>
+        </div>
+      </div>
+    `;
+    item.addEventListener('click', () => toggleForecastDetails(forecast, item));
+    forecastContainer.appendChild(item);
+  });
+
+  // Hourly
+  const hourlyContainer = document.getElementById('hourlyForecast');
+  hourlyContainer.innerHTML = '';
+  forecastData.list.slice(0, 8).forEach(forecast => {
+    const item = document.createElement('div');
+    item.className = 'hourly-item';
+    const time = new Date(forecast.dt * 1000).toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+    item.innerHTML = `
+      <div class="hourly-time">${time}</div>
+      <div class="hourly-icon">${getWeatherIcon(forecast.weather[0].icon)}</div>
+      <div class="hourly-temp">${convertTemp(forecast.main.temp)}${unit}</div>
+      <div class="hourly-desc">${forecast.weather[0].description}</div>
+    `;
+    hourlyContainer.appendChild(item);
+  });
+
+  updateRainChart(currentRain + currentSnow, forecastData.list);
 }
 function getWeatherIcon(iconCode) {
   const icons = {
@@ -1509,6 +1819,27 @@ function getWeatherInsight(temp, humidity, windSpeed, description, tempFeelsLike
       insight += `It's a cloudy day. `;
     }
   }
+  // What to wear
+  let wear = '';
+  if (description.includes('thunder') || description.includes('storm')) {
+    wear = 'Stay inside if possible; if you must go out, full waterproofs and rubber-soled shoes.';
+  } else if (description.includes('snow') || description.includes('blizzard')) {
+    wear = 'Heavy winter coat, waterproof boots, gloves, hat, and thermal underlayers.';
+  } else if (description.includes('rain') || description.includes('drizzle')) {
+    wear = 'Rain jacket or waterproof coat and waterproof footwear.';
+  } else if (temp > 30) {
+    wear = 'Lightweight breathable clothing — shorts and a t-shirt. Sunscreen is non-negotiable.';
+  } else if (temp > 22) {
+    wear = 'Light layers — a t-shirt or light shirt, comfortable pants or shorts.';
+  } else if (temp > 14) {
+    wear = 'A hoodie or light jacket over a t-shirt should do the trick.';
+  } else if (temp > 5) {
+    wear = 'A warm jacket, jeans, and closed-toe shoes.';
+  } else {
+    wear = 'Heavy coat, thermal layers, hat, gloves, and warm boots — all of them.';
+  }
+  if (windSpeed > 10 && !description.includes('rain')) wear += ' Windbreaker recommended too.';
+  insight += `<br><em>👔 What to wear: ${wear}</em>`;
   return insight.trim();
 }
 function updateRainChart(currentRain, hourlyForecasts) {
@@ -1562,13 +1893,39 @@ function updateRainChart(currentRain, hourlyForecasts) {
 
 /* ===== AD SCRIPTS ===== */
 
-// --- Popup Ad ---
+// ── Popup Ad (close button dodges the cursor) ────────────────────
 (function() {
-  const overlay    = document.getElementById('popupOverlay');
-  const closeBtn   = document.getElementById('popupCloseBtn');
-  const timerSpan  = document.getElementById('popupTimer');
-  const countdown  = document.getElementById('popupCountdown');
+  const overlay   = document.getElementById('popupOverlay');
+  const closeBtn  = document.getElementById('popupCloseBtn');
+  const timerSpan = document.getElementById('popupTimer');
+  const countdown = document.getElementById('popupCountdown');
+  const popupAd   = overlay.querySelector('.popup-ad');
   let popupInterval, countdownVal;
+
+  // Dodging logic: corners the button can jump to
+  const corners = [
+    { top: '6px',  left: '8px',   right: 'auto', bottom: 'auto' },
+    { top: '6px',  right: '8px',  left: 'auto',  bottom: 'auto' },
+    { top: '50%',  left: '8px',   right: 'auto', bottom: 'auto' },
+    { top: '50%',  right: '8px',  left: 'auto',  bottom: 'auto' },
+    { bottom: '80px', left: '8px',  right: 'auto', top: 'auto' },
+    { bottom: '80px', right: '8px', left: 'auto',  top: 'auto' },
+  ];
+  let lastCorner = 1;
+
+  popupAd.addEventListener('mousemove', function(e) {
+    if (closeBtn.disabled) return;
+    const r = closeBtn.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    const dist = Math.hypot(e.clientX - cx, e.clientY - cy);
+    if (dist < 70) {
+      let next;
+      do { next = Math.floor(Math.random() * corners.length); } while (next === lastCorner);
+      lastCorner = next;
+      const c = corners[next];
+      Object.assign(closeBtn.style, { top: c.top, left: c.left, right: c.right, bottom: c.bottom });
+    }
+  });
 
   function showPopup() {
     overlay.classList.remove('hidden');
@@ -1576,6 +1933,9 @@ function updateRainChart(currentRain, hourlyForecasts) {
     timerSpan.textContent = countdownVal;
     closeBtn.disabled = true;
     countdown.style.display = 'block';
+    // Reset button position
+    Object.assign(closeBtn.style, { top: '6px', right: '8px', left: 'auto', bottom: 'auto' });
+    lastCorner = 1;
     clearInterval(popupInterval);
     popupInterval = setInterval(function() {
       countdownVal--;
@@ -1588,43 +1948,48 @@ function updateRainChart(currentRain, hourlyForecasts) {
     }, 1000);
   }
 
-  function hidePopup() {
+  closeBtn.addEventListener('click', function() {
     overlay.classList.add('hidden');
-    // Come back to haunt them
     setTimeout(showPopup, 45000);
-  }
+  });
 
-  closeBtn.addEventListener('click', hidePopup);
-  // Click outside does nothing (intentionally annoying)
-
-  // Show after 3s on page load
   setTimeout(showPopup, 3000);
 })();
 
-// --- Corner Ad with fake countdown timer ---
+// ── Corner Ad — timer randomly jumps back when hope is near ─────
 (function() {
-  const corner = document.getElementById('cornerAd');
+  const corner  = document.getElementById('cornerAd');
   const timerEl = document.getElementById('cornerTimer');
-  let seconds = 599; // 9:59
+  let seconds = 599;
   let timerInterval;
 
-  function startCornerTimer() {
-    clearInterval(timerInterval);
-    timerInterval = setInterval(function() {
-      seconds--;
-      if (seconds < 0) seconds = 599; // reset for maximum annoyance
-      const m = Math.floor(seconds / 60);
-      const s = seconds % 60;
-      timerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-    }, 1000);
+  function tick() {
+    seconds--;
+    if (seconds < 0) { seconds = 599; return; }
+    // Evil: randomly add 30-60s when below 2 minutes
+    if (seconds < 120 && Math.random() < 0.025) {
+      const jump = 30 + Math.floor(Math.random() * 31);
+      seconds += jump;
+      timerEl.style.color = '#ff6600';
+      setTimeout(() => { timerEl.style.color = '#cc0000'; }, 350);
+    }
+    // Even more evil: when below 30s it jumps every ~5s
+    if (seconds < 30 && Math.random() < 0.18) {
+      seconds += 30 + Math.floor(Math.random() * 31);
+      timerEl.style.color = '#ff0000';
+      setTimeout(() => { timerEl.style.color = '#cc0000'; }, 350);
+    }
+    const m = Math.floor(seconds / 60), s = seconds % 60;
+    timerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
   }
 
   function showCornerAd() {
     corner.classList.remove('hidden');
     corner.style.animation = 'none';
-    void corner.offsetWidth; // reflow to restart animation
+    void corner.offsetWidth;
     corner.style.animation = '';
-    startCornerTimer();
+    clearInterval(timerInterval);
+    timerInterval = setInterval(tick, 1000);
   }
 
   window.closeCornerAd = function() {
@@ -1633,8 +1998,101 @@ function updateRainChart(currentRain, hourlyForecasts) {
     setTimeout(showCornerAd, 30000);
   };
 
-  // Show corner ad 12 seconds after page load
   setTimeout(showCornerAd, 12000);
+})();
+
+// ── Browser Outdated Bar ──────────────────────────────────────────
+(function() {
+  const bar = document.getElementById('browserBar');
+  setTimeout(() => bar.classList.add('visible'), 800);
+})();
+
+// ── Cookie Consent ────────────────────────────────────────────────
+(function() {
+  const categories = [
+    'Essential Cookies', 'Performance Analytics', 'Marketing Cookies',
+    'Functional Cookies', 'Social Media Tracking', 'Behavioral Targeting',
+    'Emotional Tracking', 'Dream Analysis', 'Retinal Scan Data',
+    'Vibes-Based Advertising', 'Psychographic Profiling', 'Sleep Pattern Analysis',
+    'Grocery List Monitoring', 'Location History (Lifetime)', 'Voice Recognition Data',
+    'Facial Expression Monitoring', 'Heartbeat Synchronization', 'Purchase Intent Prediction',
+    'Political Opinion Tracking', 'Relationship Status Inference', 'Pet Behavior Analysis',
+    'Third-Party Data Sharing (Tier 1)', 'Third-Party Data Sharing (Tier 2)',
+    'Third-Party Data Sharing (Tier 3)', 'DNA Pattern Recognition',
+    'Quantum Behavioral Cookies', 'Cross-Device Soul Synchronization',
+    'Ambient Room Temperature Tracking', 'Fridge Contents Analysis',
+    'Typing Rhythm Authentication', 'Micro-Expression Profiling',
+    'Astrology-Based Targeting', 'Subconscious Click Pattern Analysis',
+    'Pre-Cognitive Ad Delivery', 'Retroactive Consent Mining',
+    'Ultrasonic Data Collection', 'Infrared Presence Detection',
+    'Background Conversation Transcription', 'Neighbor Behavior Correlation',
+    'Future Purchase Pre-Authorization', 'Memory Palace Mapping',
+    'Involuntary Muscle Response Tracking', 'Blink Rate Monetization',
+    'Shadow Profile Construction', 'Metaverse Identity Linking',
+    'Generational Trauma Targeting', 'Inner Monologue Classification'
+  ]; // 47 exactly
+
+  const modalDescriptions = {
+    'Emotional Tracking': 'We infer your emotional state from click hesitation patterns and cursor tremor to serve you ads at peak vulnerability.',
+    'Dream Analysis': 'By monitoring device usage at 3-5am we reconstruct probable dream content for overnight ad scheduling.',
+    'Retinal Scan Data': 'Your front camera heatmaps what you look at longest. This data is shared with 14 ophthalmology partners.',
+    'Vibes-Based Advertising': 'A proprietary ML model assigns you a "current vibe score" (0–100) to match ads to your mood.',
+    'Psychographic Profiling': 'We build a 4,000-variable psychological model of you using your weather lookup history.',
+    'Quantum Behavioral Cookies': 'These cookies exist in a superposition of accepted and rejected until observed by our servers.',
+    'Cross-Device Soul Synchronization': 'Links your identity across all devices including devices you haven\'t bought yet.',
+    'Generational Trauma Targeting': 'Identifies inherited anxiety triggers to deliver highly resonant financial product ads.',
+    'Inner Monologue Classification': 'Classifies the *type* of inner monologue you have (narrator, critic, hype voice) to fine-tune messaging.',
+    'Blink Rate Monetization': 'Your blink rate indicates interest level. We sell this data to 47 brands at $0.003 per blink.',
+  };
+
+  function buildToggles(containerId, items) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = items.map((cat, i) => `
+      <div class="cookie-toggle-item">
+        <label for="ct_${i}">${cat}</label>
+        <label class="toggle-switch">
+          <input type="checkbox" id="ct_${i}" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    `).join('');
+  }
+
+  function buildModal() {
+    const body = document.getElementById('cookieModalBody');
+    if (!body) return;
+    body.innerHTML = categories.map((cat, i) => `
+      <div class="modal-category">
+        <div class="modal-cat-header">
+          <strong>${cat}</strong>
+          <label class="toggle-switch">
+            <input type="checkbox" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <p>${modalDescriptions[cat] || 'This cookie category enables our partners to collect, process, and monetize various signals from your device and behaviour to deliver a more "personalized" experience.'}</p>
+      </div>
+    `).join('');
+  }
+
+  window.closeCookies = function() {
+    document.getElementById('cookieOverlay').classList.add('gone');
+  };
+  window.openCookieModal = function() {
+    buildModal();
+    document.getElementById('cookieModal').classList.remove('hidden');
+  };
+  window.closeCookieModal = function() {
+    document.getElementById('cookieModal').classList.add('hidden');
+  };
+
+  // Build the 47 toggles and show banner after 1.5s
+  buildToggles('cookieToggles', categories);
+  setTimeout(() => {
+    const overlay = document.getElementById('cookieOverlay');
+    overlay.classList.add('visible');
+  }, 1500);
 })();</script>
 </body>
 </html>
