@@ -609,6 +609,213 @@
       color: #ff3333;
       font-weight: bold;
     }
+
+    /* ========== AD STYLES ========== */
+
+    /* --- Popup Overlay --- */
+    .popup-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.75); z-index: 99999;
+      display: flex; justify-content: center; align-items: center;
+      animation: adFadeIn 0.3s ease;
+    }
+    .popup-overlay.hidden { display: none; }
+    .popup-ad {
+      background: white; max-width: 480px; width: 92%;
+      border: 5px solid #ff6600; position: relative;
+      font-family: Arial, sans-serif; text-align: center;
+      border-radius: 6px; overflow: hidden;
+      animation: popBounceIn 0.5s cubic-bezier(0.175,0.885,0.32,1.275);
+    }
+    .popup-ad-label {
+      background: #444; color: #aaa; font-size: 9px;
+      padding: 3px 6px; text-align: left; letter-spacing: 1px;
+    }
+    .popup-ad-header {
+      background: linear-gradient(135deg, #cc0000, #ff6600);
+      padding: 18px 20px 14px; color: white;
+    }
+    .popup-ad-header h2 {
+      margin: 0 0 4px; font-size: 26px; text-shadow: 2px 2px 0 #000;
+      animation: adShake 0.4s infinite;
+    }
+    .popup-ad-header p { margin: 0; font-size: 13px; color: #ffe; }
+    .popup-ad-body {
+      padding: 18px 24px;
+      background: linear-gradient(to bottom, #fffbe6, #fff);
+    }
+    .popup-ad-body p { color: #333; font-size: 15px; margin: 8px 0; }
+    .popup-ad-body .prize-box {
+      background: #fffde7; border: 2px dashed #ff6600;
+      border-radius: 8px; padding: 10px; margin: 12px 0;
+      font-size: 28px; font-weight: bold; color: #cc0000;
+      letter-spacing: 2px; animation: adPulseText 1s infinite alternate;
+    }
+    .popup-claim-btn {
+      display: block; width: 80%; margin: 14px auto 6px;
+      background: linear-gradient(to bottom, #00cc00, #006600);
+      color: white; border: 3px solid #003300;
+      padding: 14px; font-size: 18px; font-weight: bold;
+      cursor: pointer; border-radius: 6px;
+      animation: adBtnPulse 0.7s infinite alternate;
+      text-decoration: none;
+    }
+    .popup-ad-footer {
+      background: #f5f5f5; padding: 10px;
+      font-size: 11px; color: #999;
+    }
+    .popup-close-btn {
+      position: absolute; top: 6px; right: 8px;
+      background: #888; color: white; border: none;
+      width: 26px; height: 26px; border-radius: 50%;
+      font-size: 13px; font-weight: bold; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+    .popup-close-btn:disabled { background: #ccc; color: #aaa; cursor: not-allowed; }
+    .popup-countdown { font-size: 11px; color: #999; margin-top: 4px; }
+
+    /* --- Side Banner --- */
+    .side-banner-ad {
+      position: fixed; right: 0; top: 50%; transform: translateY(-50%);
+      width: 155px; background: white; border: 3px solid #cc0000;
+      z-index: 9998; font-family: Arial, sans-serif;
+      text-align: center; cursor: pointer;
+      box-shadow: 0 0 18px rgba(255,0,0,0.6);
+      animation: adSidePulse 1.2s infinite alternate;
+    }
+    .side-banner-ad .ad-label {
+      background: #333; color: #aaa; font-size: 8px;
+      padding: 2px 5px; text-align: left; letter-spacing: 1px;
+    }
+    .side-banner-ad .ad-inner {
+      background: linear-gradient(160deg, #000080, #0000cc, #000080);
+      padding: 12px 8px;
+    }
+    .side-banner-ad .ad-icon { font-size: 36px; display: block; margin-bottom: 6px; }
+    .side-banner-ad h3 {
+      color: #ffff00; font-size: 12px; margin: 4px 0;
+      text-transform: uppercase; text-shadow: 0 0 6px #ff0;
+      animation: adGlow 0.8s infinite alternate;
+    }
+    .side-banner-ad p { color: #fff; font-size: 10px; margin: 4px 0; }
+    .side-banner-ad .side-ad-btn {
+      background: #ff3300; color: white; border: none;
+      padding: 7px 12px; margin-top: 8px; font-weight: bold;
+      font-size: 11px; cursor: pointer; border-radius: 3px; width: 90%;
+      animation: adBtnBlink 0.6s infinite alternate;
+    }
+    .side-banner-ad .side-close {
+      position: absolute; top: 18px; left: -22px;
+      background: #cc0000; color: white; border: none;
+      width: 20px; height: 20px; font-size: 11px;
+      font-weight: bold; cursor: pointer; border-radius: 3px 0 0 3px;
+    }
+
+    /* --- Bottom Scrolling Banner --- */
+    .bottom-banner-ad {
+      position: fixed; bottom: 0; left: 0; width: 100%;
+      background: linear-gradient(to right, #003, #006, #003);
+      color: #ffff00; z-index: 9997; font-family: Arial, sans-serif;
+      font-weight: bold; font-size: 13px;
+      border-top: 3px solid #ff0000; overflow: hidden;
+      height: 32px; display: flex; align-items: center;
+    }
+    .bottom-banner-ad.hidden { display: none; }
+    .bottom-banner-scroll {
+      display: inline-block; white-space: nowrap;
+      animation: adMarquee 22s linear infinite; padding-left: 100%;
+    }
+    .bottom-banner-close {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      background: #cc0000; color: white; border: none;
+      width: 20px; height: 20px; border-radius: 50%;
+      font-size: 11px; font-weight: bold; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    /* --- Corner Notification Ad --- */
+    .corner-ad {
+      position: fixed; bottom: 50px; right: 12px; width: 260px;
+      background: white; border: 2px solid #ff6600;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.55);
+      z-index: 9996; font-family: Arial, sans-serif;
+      border-radius: 8px; overflow: hidden;
+      animation: adSlideIn 0.4s ease;
+    }
+    .corner-ad.hidden { display: none; }
+    .corner-ad-header {
+      background: #ff6600; color: white;
+      padding: 8px 10px; font-size: 12px; font-weight: bold;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .corner-ad-header .notif-dot {
+      width: 8px; height: 8px; background: #ffff00;
+      border-radius: 50%; animation: adNotifPing 0.8s infinite alternate;
+      display: inline-block; margin-right: 6px;
+    }
+    .corner-ad-body { padding: 14px; background: linear-gradient(135deg, #fffbe6, #fff0d9); }
+    .corner-ad-body p { margin: 4px 0; font-size: 13px; color: #333; font-weight: bold; }
+    .corner-ad-body .corner-timer {
+      font-size: 22px; color: #cc0000; font-weight: bold;
+      font-family: monospace; animation: adPulseText 1s infinite alternate;
+    }
+    .corner-ad-btn {
+      display: block; width: 90%; margin: 10px auto 0;
+      background: #ff6600; color: white; border: none;
+      padding: 9px; font-weight: bold; font-size: 13px;
+      cursor: pointer; border-radius: 4px;
+      animation: adBtnPulse 0.9s infinite alternate;
+    }
+    .corner-ad-close {
+      background: transparent; border: none;
+      color: white; cursor: pointer; font-size: 15px; font-weight: bold;
+      line-height: 1;
+    }
+
+    /* --- Keyframes --- */
+    @keyframes adFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popBounceIn {
+      from { transform: scale(0.3) rotate(-8deg); opacity: 0; }
+      to   { transform: scale(1)   rotate(0deg);  opacity: 1; }
+    }
+    @keyframes adShake {
+      0%,100% { transform: translateX(0); }
+      25%     { transform: translateX(-4px) rotate(-1deg); }
+      75%     { transform: translateX(4px)  rotate(1deg); }
+    }
+    @keyframes adPulseText {
+      from { opacity: 1; }
+      to   { opacity: 0.6; }
+    }
+    @keyframes adBtnPulse {
+      from { transform: scale(1);    box-shadow: 0 0 6px rgba(0,180,0,0.5); }
+      to   { transform: scale(1.05); box-shadow: 0 0 22px rgba(0,200,0,0.9); }
+    }
+    @keyframes adBtnBlink {
+      from { background: #ff3300; }
+      to   { background: #cc0000; }
+    }
+    @keyframes adSidePulse {
+      from { box-shadow: 0 0 10px rgba(255,0,0,0.5); }
+      to   { box-shadow: 0 0 30px rgba(255,0,0,1); }
+    }
+    @keyframes adGlow {
+      from { text-shadow: 0 0 4px #ff0; }
+      to   { text-shadow: 0 0 16px #ff0, 0 0 30px #ff6600; }
+    }
+    @keyframes adMarquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-100%); }
+    }
+    @keyframes adSlideIn {
+      from { transform: translateX(310px); opacity: 0; }
+      to   { transform: translateX(0);    opacity: 1; }
+    }
+    @keyframes adNotifPing {
+      from { box-shadow: 0 0 0 0 rgba(255,255,0,0.8); }
+      to   { box-shadow: 0 0 0 6px rgba(255,255,0,0); }
+    }
   </style>
 </head>
 <body>
@@ -683,6 +890,78 @@
     </div>
     <div id="savedLocationsList">
       <!-- Saved locations will be inserted here -->
+    </div>
+  </div>
+
+  <!-- ===== ADS ===== -->
+
+  <!-- Popup Ad -->
+  <div class="popup-overlay hidden" id="popupOverlay">
+    <div class="popup-ad">
+      <div class="popup-ad-label">AD &nbsp;|&nbsp; ADVERTISEMENT</div>
+      <button class="popup-close-btn" id="popupCloseBtn" disabled title="Please wait...">✕</button>
+      <div class="popup-ad-header">
+        <h2>🎉 CONGRATULATIONS! 🎉</h2>
+        <p>You are today's lucky visitor!</p>
+      </div>
+      <div class="popup-ad-body">
+        <p>You have been <strong>SELECTED</strong> to receive:</p>
+        <div class="prize-box">FREE iPhone 16 Pro Max</div>
+        <p style="font-size:12px;color:#666;">Only <strong style="color:#cc0000;">3 prizes</strong> remaining. Claim NOW before it expires!</p>
+        <a class="popup-claim-btn" href="#" onclick="return false;">✅ CLAIM YOUR FREE PRIZE</a>
+        <div class="popup-countdown" id="popupCountdown">Close button available in <span id="popupTimer">5</span>s</div>
+      </div>
+      <div class="popup-ad-footer">
+        By clicking you agree to our Terms & Conditions, Privacy Policy, and acknowledge that prizes are totally real and not made up at all. Offer valid while supplies last. Limit one per customer per lifetime per universe.
+      </div>
+    </div>
+  </div>
+
+  <!-- Side Banner Ad -->
+  <div class="side-banner-ad" id="sideBanner">
+    <button class="side-close" onclick="document.getElementById('sideBanner').style.display='none'" title="Close">✕</button>
+    <div class="ad-label">AD &nbsp;|&nbsp; SPONSORED</div>
+    <div class="ad-inner">
+      <span class="ad-icon">⚠️</span>
+      <h3>VIRUS DETECTED!</h3>
+      <p>Your device has<br><strong style="color:#ff6;font-size:16px;">47 VIRUSES</strong></p>
+      <p style="font-size:9px;color:#adf;">Detected by WeatherScan™</p>
+      <button class="side-ad-btn" onclick="alert('Just kidding! No viruses here 😄')">FIX NOW — FREE</button>
+    </div>
+    <div style="background:#ffe;padding:8px;font-size:9px;color:#333;font-family:Arial;">
+      <div style="font-weight:bold;color:#c00;">⚡ LIMITED TIME</div>
+      <div>WeatherGuard Pro™</div>
+      <div style="color:#090;font-weight:bold;">ONLY $0.00/mo</div>
+    </div>
+    <div class="ad-label" style="text-align:center;padding:4px;">AdsByWeather™ &nbsp;ⓘ</div>
+  </div>
+
+  <!-- Bottom Scrolling Banner -->
+  <div class="bottom-banner-ad" id="bottomBanner">
+    <span class="bottom-banner-scroll">
+      🔥&nbsp; YOU HAVE (1) UNREAD MESSAGE &nbsp;•&nbsp;
+      🏆 FLASH SALE: 99% OFF EVERYTHING — ENDS IN 00:59 &nbsp;•&nbsp;
+      💊 DOCTORS HATE THIS ONE WEIRD TRICK! &nbsp;•&nbsp;
+      📱 WIN A FREE SMARTPHONE — CLICK HERE &nbsp;•&nbsp;
+      💰 MAKE $5,000/WEEK FROM HOME — NO EXPERIENCE NEEDED &nbsp;•&nbsp;
+      🎁 YOUR REWARD IS WAITING — CLAIM NOW &nbsp;•&nbsp;
+      ⚡ LIMITED TIME: FREE SHIPPING ON ALL ORDERS OVER $0 &nbsp;•&nbsp;
+      👀 LOCAL SINGLES IN YOUR AREA WANT TO MEET YOU &nbsp;•&nbsp;
+    </span>
+    <button class="bottom-banner-close" onclick="document.getElementById('bottomBanner').classList.add('hidden')" title="Close">✕</button>
+  </div>
+
+  <!-- Corner Notification Ad -->
+  <div class="corner-ad hidden" id="cornerAd">
+    <div class="corner-ad-header">
+      <span><span class="notif-dot"></span> New Message (1)</span>
+      <button class="corner-ad-close" onclick="closeCornerAd()">✕</button>
+    </div>
+    <div class="corner-ad-body">
+      <p>⚡ FLASH DEAL EXPIRING!</p>
+      <div class="corner-timer" id="cornerTimer">09:59</div>
+      <p style="font-size:11px;color:#666;">Get 95% off WeatherPremium™<br>Before someone else takes it!</p>
+      <button class="corner-ad-btn" onclick="alert('Wow, great deal right? 😂')">GRAB THIS DEAL →</button>
     </div>
   </div>
 
@@ -1279,6 +1558,83 @@ function updateRainChart(currentRain, hourlyForecasts) {
     rainBars.appendChild(bar);
   });
   rainChart.classList.add('visible');
-}</script>
+}
+
+/* ===== AD SCRIPTS ===== */
+
+// --- Popup Ad ---
+(function() {
+  const overlay    = document.getElementById('popupOverlay');
+  const closeBtn   = document.getElementById('popupCloseBtn');
+  const timerSpan  = document.getElementById('popupTimer');
+  const countdown  = document.getElementById('popupCountdown');
+  let popupInterval, countdownVal;
+
+  function showPopup() {
+    overlay.classList.remove('hidden');
+    countdownVal = 5;
+    timerSpan.textContent = countdownVal;
+    closeBtn.disabled = true;
+    countdown.style.display = 'block';
+    clearInterval(popupInterval);
+    popupInterval = setInterval(function() {
+      countdownVal--;
+      timerSpan.textContent = countdownVal;
+      if (countdownVal <= 0) {
+        clearInterval(popupInterval);
+        closeBtn.disabled = false;
+        countdown.style.display = 'none';
+      }
+    }, 1000);
+  }
+
+  function hidePopup() {
+    overlay.classList.add('hidden');
+    // Come back to haunt them
+    setTimeout(showPopup, 45000);
+  }
+
+  closeBtn.addEventListener('click', hidePopup);
+  // Click outside does nothing (intentionally annoying)
+
+  // Show after 3s on page load
+  setTimeout(showPopup, 3000);
+})();
+
+// --- Corner Ad with fake countdown timer ---
+(function() {
+  const corner = document.getElementById('cornerAd');
+  const timerEl = document.getElementById('cornerTimer');
+  let seconds = 599; // 9:59
+  let timerInterval;
+
+  function startCornerTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(function() {
+      seconds--;
+      if (seconds < 0) seconds = 599; // reset for maximum annoyance
+      const m = Math.floor(seconds / 60);
+      const s = seconds % 60;
+      timerEl.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }, 1000);
+  }
+
+  function showCornerAd() {
+    corner.classList.remove('hidden');
+    corner.style.animation = 'none';
+    void corner.offsetWidth; // reflow to restart animation
+    corner.style.animation = '';
+    startCornerTimer();
+  }
+
+  window.closeCornerAd = function() {
+    corner.classList.add('hidden');
+    clearInterval(timerInterval);
+    setTimeout(showCornerAd, 30000);
+  };
+
+  // Show corner ad 12 seconds after page load
+  setTimeout(showCornerAd, 12000);
+})();</script>
 </body>
 </html>
